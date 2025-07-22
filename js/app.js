@@ -1,54 +1,36 @@
-
-// 模拟资源数据结构（嵌入文件夹代码）
+// 模拟资源数据
 const testData = [
   {
-    "type": "视频",
-    "subtypes": [
+    type: "音频",
+    subtype: "圣经朗读",
+    sources: [
       {
-        "subtype": "属灵洞察力和敏感度",
-        "sources": [
-          {
-            "type": "remote",
-            "pcloudCode": "kZYkamZk37jjnbr42XWMUvWP1MDaYC87r1X"
-          }
-        ]
-      },
-      {
-        "subtype": "讲道信息",
-        "sources": [
-          {
-            "type": "remote",
-            "pcloudCode": "kZErJEZFfktW9umY6mJSDCwm6KgH5uA5VSk"
-          }
-        ]
+        type: "remote",
+        pcloudCode: "kZPMMfZiCcVI79eC9pKbDrMFeNAbursKdXk"
       }
     ]
   },
   {
-    "type": "音频",
-    "subtypes": [
+    type: "视频",
+    subtype: "诗歌",
+    sources: [
       {
-        "subtype": "圣经朗读",
-        "sources": [
-          {
-            "type": "remote",
-            "pcloudCode": "kZPMMfZiCcVI79eC9pKbDrMFeNAbursKdXk"
-          }
-        ]
+        type: "remote",
+        pcloudCode: "kZYkamZk37jjnbr42XWMUvWP1MDaYC87r1X"
+      }
+    ]
+  },
+  {
+    type: "视频",
+    subtype: "讲道信息",
+    sources: [
+      {
+        type: "remote",
+        pcloudCode: "kZErJEZFfktW9umY6mJSDCwm6KgH5uA5VSk"
       }
     ]
   }
 ];
-
-let allFiles = []; // 将从所有目录加载到的文件统一存储在这里
-
-async function loadAndRenderAll() {
-  const sidebar = document.getElementById("sidebar");
-  const resourceList = document.getElementById("resourceList");
-  sidebar.innerHTML = '';
-  resourceList.innerHTML = '';
-  allFiles = [];
-
 
 // 渲染分类菜单
 function renderResources(data) {
@@ -81,14 +63,13 @@ function renderResources(data) {
 function showResources(type, subtype) {
   const resourceList = document.getElementById("resourceList");
   resourceList.innerHTML = '';
-  const matched = allFiles.filter(f => f.type === type && f.subtype === subtype);
-  if (!matched.length) return;
-
-  matched.forEach(file => {
+  const matched = testData.find(item => item.type === type && item.subtype === subtype);
+  if (!matched) return;
+  matched.sources.forEach(src => {
     const li = document.createElement("li");
     const a = document.createElement("a");
-    a.href = file.link;
-    a.textContent = file.name;
+    a.href = `https://e.pcloud.link/publink/show?code=${src.pcloudCode}`;
+    a.textContent = `${type} / ${subtype}`;
     a.target = "_blank";
     li.appendChild(a);
     resourceList.appendChild(li);
@@ -97,7 +78,7 @@ function showResources(type, subtype) {
   document.getElementById("subcategoryTitle").textContent = `${type} / ${subtype}`;
 }
 
-// 搜索功能：匹配文件名、分类、子类
+// 搜索功能
 document.getElementById("searchInput").addEventListener("input", function (e) {
   const keyword = e.target.value.trim().toLowerCase();
   const results = [];
@@ -108,10 +89,15 @@ document.getElementById("searchInput").addEventListener("input", function (e) {
     return;
   }
 
-  allFiles.forEach(file => {
-    const text = \`\${file.name} \${file.type} \${file.subtype}\`.toLowerCase();
-    if (text.includes(keyword)) {
-      results.push(file);
+  testData.forEach(item => {
+    const title = `${item.type} ${item.subtype}`.toLowerCase();
+    if (title.includes(keyword)) {
+      item.sources.forEach(src => {
+        results.push({
+          title: `${item.type} / ${item.subtype}`,
+          pcloudCode: src.pcloudCode
+        });
+      });
     }
   });
 
