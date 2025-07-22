@@ -1,32 +1,39 @@
 // 模拟资源数据结构（嵌入文件夹代码）
 const testData = [
   {
-    type: "音频",
-    subtype: "圣经朗读",
-    sources: [
+    "type": "视频",
+    "subtypes": [
       {
-        type: "remote",
-        pcloudCode: "kZPMMfZiCcVI79eC9pKbDrMFeNAbursKdXk"
+        "subtype": "属灵洞察力和敏感度",
+        "sources": [
+          {
+            "type": "remote",
+            "pcloudCode": "kZYkamZk37jjnbr42XWMUvWP1MDaYC87r1X"
+          }
+        ]
+      },
+      {
+        "subtype": "讲道信息",
+        "sources": [
+          {
+            "type": "remote",
+            "pcloudCode": "kZErJEZFfktW9umY6mJSDCwm6KgH5uA5VSk"
+          }
+        ]
       }
     ]
   },
   {
-    type: "视频",
-    subtype: "属灵洞察力和敏感度",
-    sources: [
+    "type": "音频",
+    "subtypes": [
       {
-        type: "remote",
-        pcloudCode: "kZYkamZk37jjnbr42XWMUvWP1MDaYC87r1X"
-      }
-    ]
-  },
-  {
-    type: "视频",
-    subtype: "讲道信息",
-    sources: [
-      {
-        type: "remote",
-        pcloudCode: "kZErJEZFfktW9umY6mJSDCwm6KgH5uA5VSk"
+        "subtype": "圣经朗读",
+        "sources": [
+          {
+            "type": "remote",
+            "pcloudCode": "kZPMMfZiCcVI79eC9pKbDrMFeNAbursKdXk"
+          }
+        ]
       }
     ]
   }
