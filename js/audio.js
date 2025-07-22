@@ -21,19 +21,13 @@ async function loadData() {
       {
         "subtype": "属灵洞察力和敏感度",
         "sources": [
-          {
-            "type": "remote",
-            "pcloudCode": "kZYkamZk37jjnbr42XWMUvWP1MDaYC87r1X"
-          }
+          { "type": "remote", "pcloudCode": "kZYkamZk37jjnbr42XWMUvWP1MDaYC87r1X" }
         ]
       },
       {
         "subtype": "讲道信息",
         "sources": [
-          {
-            "type": "remote",
-            "pcloudCode": "kZErJEZFfktW9umY6mJSDCwm6KgH5uA5VSk"
-          }
+          { "type": "remote", "pcloudCode": "kZErJEZFfktW9umY6mJSDCwm6KgH5uA5VSk" }
         ]
       }
     ]
@@ -44,39 +38,38 @@ async function loadData() {
       {
         "subtype": "圣经朗读",
         "sources": [
-          {
-            "type": "remote",
-            "pcloudCode": "kZPMMfZiCcVI79eC9pKbDrMFeNAbursKdXk"
-          }
+          { "type": "remote", "pcloudCode": "kZPMMfZiCcVI79eC9pKbDrMFeNAbursKdXk" }
         ]
       }
     ]
   }
 ]
-
 ;
 
   const tempFiles = [];
-  for (const item of testData) {
-    if (item.type !== typeFilter) continue;
-    for (const src of item.sources) {
-      try {
-        const res = await fetch(`https://eapi.pcloud.com/showpublink?code=${src.pcloudCode}`);
-        const json = await res.json();
-        if (json.result === 0) {
-          const contents = json.metadata.contents || [];
-          contents.forEach(file => {
-            if (file.isfolder) return;
-            tempFiles.push({
-              name: file.name,
-              link: `https://e.pcloud.link/publink/show?code=${src.pcloudCode}#${file.name}`,
-              type: item.type,
-              subtype: item.subtype
+  for (const group of testData) {
+    if (group.type !== typeFilter) continue;
+    for (const item of group.subtypes) {
+      for (const src of item.sources) {
+        try {
+          const res = await fetch(`https://eapi.pcloud.com/showpublink?code=${src.pcloudCode}`);
+          const json = await res.json();
+          if (json.result === 0) {
+            const contents = json.metadata.contents || [];
+            contents.forEach(file => {
+              if (file.isfolder) return;
+              tempFiles.push({
+                name: file.name,
+                link: `https://e.pcloud.link/publink/show?code=${src.pcloudCode}#${file.name}`,
+                type: group.type,
+                subtype: item.subtype,
+                mtime: file.modified
+              });
             });
-          });
+          }
+        } catch (e) {
+          console.warn("加载失败", e);
         }
-      } catch (e) {
-        console.warn("加载失败", e);
       }
     }
   }
@@ -102,7 +95,15 @@ function showList(subtype) {
   const list = document.getElementById("resourceList");
   list.innerHTML = '';
   document.getElementById("subcategoryTitle").textContent = typeFilter + " / " + subtype;
-  const files = allFiles.filter(f => f.subtype === subtype);
+
+  let files = allFiles.filter(f => f.subtype === subtype);
+  const sortMode = document.getElementById("sortSelect").value;
+  if (sortMode === "name") {
+    files.sort((a, b) => a.name.localeCompare(b.name));
+  } else if (sortMode === "mtime") {
+    files.sort((a, b) => (b.mtime || '').localeCompare(a.mtime || ''));
+  }
+
   files.forEach(f => {
     const li = document.createElement("li");
     const a = document.createElement("a");
@@ -138,6 +139,11 @@ document.getElementById("searchInput").addEventListener("input", function(e) {
     li.appendChild(a);
     list.appendChild(li);
   });
+});
+
+document.getElementById("sortSelect").addEventListener("change", () => {
+  const currentSub = document.getElementById("subcategoryTitle").textContent.split(" / ")[1];
+  if (currentSub) showList(currentSub);
 });
 
 loadData();

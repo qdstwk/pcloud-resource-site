@@ -1,20 +1,7 @@
 
-body {
-  font-family: sans-serif;
-  padding: 1rem;
-}
+body { font-family: sans-serif; padding: 1rem; }
 h1 { color: #333; }
-#sidebar button {
-  margin: 4px; padding: 6px 10px;
-}
-#progressBar {
-  height: 4px; width: 100%;
-  background: #eee; margin: 5px 0;
-}
-#progressBar div {
-  height: 100%; width: 0%;
-  background: #4caf50; transition: width 0.4s;
-}
-ul li mark {
-  background-color: yellow;
-}
+#sidebar button { margin: 4px; padding: 6px 10px; }
+#progressBar { height: 4px; width: 100%; background: #eee; margin: 5px 0; }
+#progressBar div { height: 100%; width: 0%; background: #4caf50; transition: width 0.4s; }
+ul li mark { background-color: yellow; }
