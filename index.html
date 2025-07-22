@@ -3,14 +3,16 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8">
-  <title>资源分类</title>
+  <title>资源中心（旧版）</title>
   <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
   <h1>资源中心</h1>
-  <ul>
-    <li><a href="audio.html">音频</a></li>
-    <li><a href="video.html">视频</a></li>
-  </ul>
+  <input type="text" id="searchInput" placeholder="搜索关键词">
+  <div id="progressBar"><div></div></div>
+  <div id="subcategoryTitle">请选择分类</div>
+  <div id="sidebar"></div>
+  <ul id="resourceList"></ul>
+  <script src="app.js"></script>
 </body>
 </html>
