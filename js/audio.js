@@ -27,7 +27,7 @@ async function loadData() {
   },
   {
     "type": "视频",
-    "subtype": "诗歌",
+    "subtype": "属灵洞察力和敏感度",
     "sources": [{"type": "remote", "pcloudCode": "kZYkamZk37jjnbr42XWMUvWP1MDaYC87r1X"}]
   }
 ]
