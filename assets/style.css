@@ -1,12 +1,20 @@
 
-body { font-family: sans-serif; margin: 0; padding: 0; background: #f9f9f9; }
-header { background: #333; color: white; padding: 1em; }
-input { width: 80%%; padding: 0.5em; margin-top: 1em; max-width: 600px; }
-.container { display: flex; }
-aside { width: 200px; background: #eee; padding: 1em; }
-main { flex-grow: 1; padding: 1em; }
-ul { list-style: none; padding: 0; }
-li { display: flex; align-items: center; margin: 0.5em 0; background: #fff; padding: 0.5em; border-radius: 5px; }
-li img { width: 32px; height: 32px; margin-right: 0.5em; }
-button { margin: 0.2em; }
-footer { text-align: center; padding: 1em; font-size: 0.9em; background: #f0f0f0; }
+body {
+  font-family: sans-serif;
+  padding: 1rem;
+}
+h1 { color: #333; }
+#sidebar button {
+  margin: 4px; padding: 6px 10px;
+}
+#progressBar {
+  height: 4px; width: 100%;
+  background: #eee; margin: 5px 0;
+}
+#progressBar div {
+  height: 100%; width: 0%;
+  background: #4caf50; transition: width 0.4s;
+}
+ul li mark {
+  background-color: yellow;
+}
