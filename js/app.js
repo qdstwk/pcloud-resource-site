@@ -35,6 +35,53 @@ const testData = [
 // 假设这是原始用于渲染资源的函数，你可以保留原来的 renderResources 函数
 renderResources(testData);
 
+document.getElementById("searchInput").addEventListener("input", function (e) {
+  const keyword = e.target.value.trim().toLowerCase();
+  if (!keyword) {
+    document.getElementById("subcategoryTitle").textContent = "请选择分类";
+    document.getElementById("resourceList").innerHTML = "";
+    return;
+  }
+
+  const results = [];
+  testData.forEach(item => {
+    item.sources.forEach(src => {
+      const title = `${item.type} - ${item.subtype}`.toLowerCase();
+      if (title.includes(keyword) || src.pcloudCode.toLowerCase().includes(keyword)) {
+        results.push({
+          title: `${item.type} / ${item.subtype}`,
+          pcloudCode: src.pcloudCode
+        });
+      }
+    });
+  });
+
+   showSearchResults(results, keyword);
+});
+
+  function showSearchResults(results, keyword) {
+  const resourceList = document.getElementById("resourceList");
+  resourceList.innerHTML = '';
+  document.getElementById("subcategoryTitle").textContent = `搜索结果：「${keyword}」`;
+
+  if (results.length === 0) {
+    resourceList.innerHTML = "<li>未找到匹配的资源</li>";
+    return;
+  }
+
+  results.forEach(item => {
+    const li = document.createElement("li");
+    const a = document.createElement("a");
+    a.href = `https://e.pcloud.link/publink/show?code=${item.pcloudCode}`;
+    a.textContent = `${item.title}`;
+    a.target = "_blank";
+    li.appendChild(a);
+    resourceList.appendChild(li);
+  });
+}
+
+
+
 // 下面是简化版的 renderResources 示例（你可以按实际代码替换或参考）
 function renderResources(data) {
   const sidebar = document.getElementById("sidebar");
