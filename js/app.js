@@ -1,3 +1,4 @@
+
 // 模拟资源数据结构（嵌入文件夹代码）
 const testData = [
   {
@@ -48,37 +49,21 @@ async function loadAndRenderAll() {
   resourceList.innerHTML = '';
   allFiles = [];
 
+
+// 渲染分类菜单
+function renderResources(data) {
+  const sidebar = document.getElementById("sidebar");
+  const resourceList = document.getElementById("resourceList");
+  sidebar.innerHTML = '';
+  resourceList.innerHTML = '';
+
   const categories = {};
-  for (const item of testData) {
+  data.forEach(item => {
     if (!categories[item.type]) categories[item.type] = [];
     if (!categories[item.type].includes(item.subtype)) {
       categories[item.type].push(item.subtype);
     }
-
-    for (const src of item.sources) {
-      const folderUrl = `https://e.pcloud.link/publink/downloadshow?code=${src.pcloudCode}`;
-      const folderApi = `https://eapi.pcloud.com/showpublink?code=${src.pcloudCode}`;
-
-      try {
-        const res = await fetch(folderApi);
-        const json = await res.json();
-        if (json.result === 0) {
-          const contents = json.metadata.contents || [];
-          contents.forEach(file => {
-            if (file.isfolder) return;
-            allFiles.push({
-              name: file.name,
-              link: `https://e.pcloud.link/publink/show?code=${src.pcloudCode}#${file.name}`,
-              type: item.type,
-              subtype: item.subtype
-            });
-          });
-        }
-      } catch (err) {
-        console.warn("加载目录失败", src.pcloudCode, err);
-      }
-    }
-  }
+  });
 
   for (const type in categories) {
     const section = document.createElement("div");
@@ -136,22 +121,23 @@ document.getElementById("searchInput").addEventListener("input", function (e) {
 function showSearchResults(results, keyword) {
   const resourceList = document.getElementById("resourceList");
   resourceList.innerHTML = '';
-  document.getElementById("subcategoryTitle").textContent = \`搜索结果：「\${keyword}」\`;
+  document.getElementById("subcategoryTitle").textContent = `搜索结果：「${keyword}」`;
 
   if (results.length === 0) {
     resourceList.innerHTML = "<li>未找到匹配的资源</li>";
     return;
   }
 
-  results.forEach(file => {
+  results.forEach(item => {
     const li = document.createElement("li");
     const a = document.createElement("a");
-    a.href = file.link;
-    a.textContent = \`\${file.name}（\${file.type} / \${file.subtype}）\`;
+    a.href = `https://e.pcloud.link/publink/show?code=${item.pcloudCode}`;
+    a.textContent = item.title;
     a.target = "_blank";
     li.appendChild(a);
     resourceList.appendChild(li);
   });
 }
 
-loadAndRenderAll();
+// 初始渲染
+renderResources(testData);
