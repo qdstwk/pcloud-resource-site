@@ -16,21 +16,44 @@ async function loadData() {
   const testData = 
 [
   {
+    "type": "视频",
+    "subtypes": [
+      {
+        "subtype": "属灵洞察力和敏感度",
+        "sources": [
+          {
+            "type": "remote",
+            "pcloudCode": "kZYkamZk37jjnbr42XWMUvWP1MDaYC87r1X"
+          }
+        ]
+      },
+      {
+        "subtype": "讲道信息",
+        "sources": [
+          {
+            "type": "remote",
+            "pcloudCode": "kZErJEZFfktW9umY6mJSDCwm6KgH5uA5VSk"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "type": "音频",
-    "subtype": "圣经朗读",
-    "sources": [{"type": "remote", "pcloudCode": "kZPMMfZiCcVI79eC9pKbDrMFeNAbursKdXk"}]
-  },
-  {
-    "type": "视频",
-    "subtype": "讲道信息",
-    "sources": [{"type": "remote", "pcloudCode": "kZErJEZFfktW9umY6mJSDCwm6KgH5uA5VSk"}]
-  },
-  {
-    "type": "视频",
-    "subtype": "属灵洞察力和敏感度",
-    "sources": [{"type": "remote", "pcloudCode": "kZYkamZk37jjnbr42XWMUvWP1MDaYC87r1X"}]
+    "subtypes": [
+      {
+        "subtype": "圣经朗读",
+        "sources": [
+          {
+            "type": "remote",
+            "pcloudCode": "kZPMMfZiCcVI79eC9pKbDrMFeNAbursKdXk"
+          }
+        ]
+      }
+    ]
   }
 ]
+
 ;
 
   const tempFiles = [];
