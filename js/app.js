@@ -44,20 +44,23 @@ document.getElementById("searchInput").addEventListener("input", function (e) {
   }
 
   const results = [];
+
   testData.forEach(item => {
-    item.sources.forEach(src => {
-      const title = `${item.type} - ${item.subtype}`.toLowerCase();
-      if (title.includes(keyword) || src.pcloudCode.toLowerCase().includes(keyword)) {
+    const title = `${item.type} ${item.subtype}`.toLowerCase();
+
+    if (title.includes(keyword)) {
+      item.sources.forEach(src => {
         results.push({
           title: `${item.type} / ${item.subtype}`,
           pcloudCode: src.pcloudCode
         });
-      }
-    });
+      });
+    }
   });
 
-   showSearchResults(results, keyword);
+  showSearchResults(results, keyword);
 });
+
 
   function showSearchResults(results, keyword) {
   const resourceList = document.getElementById("resourceList");
