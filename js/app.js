@@ -1,4 +1,4 @@
-// 模拟 resources.json 数据，直接写在 JS 中
+// 模拟资源数据
 const testData = [
   {
     type: "音频",
@@ -12,7 +12,7 @@ const testData = [
   },
   {
     type: "视频",
-    subtype: "属灵洞察力和敏感度",
+    subtype: "诗歌",
     sources: [
       {
         type: "remote",
@@ -32,67 +32,13 @@ const testData = [
   }
 ];
 
-// 假设这是原始用于渲染资源的函数，你可以保留原来的 renderResources 函数
-renderResources(testData);
-
-document.getElementById("searchInput").addEventListener("input", function (e) {
-  const keyword = e.target.value.trim().toLowerCase();
-  if (!keyword) {
-    document.getElementById("subcategoryTitle").textContent = "请选择分类";
-    document.getElementById("resourceList").innerHTML = "";
-    return;
-  }
-
-  const results = [];
-
-  testData.forEach(item => {
-    const title = `${item.type} ${item.subtype}`.toLowerCase();
-
-    if (title.includes(keyword)) {
-      item.sources.forEach(src => {
-        results.push({
-          title: `${item.type} / ${item.subtype}`,
-          pcloudCode: src.pcloudCode
-        });
-      });
-    }
-  });
-
-  showSearchResults(results, keyword);
-});
-
-
-  function showSearchResults(results, keyword) {
-  const resourceList = document.getElementById("resourceList");
-  resourceList.innerHTML = '';
-  document.getElementById("subcategoryTitle").textContent = `搜索结果：「${keyword}」`;
-
-  if (results.length === 0) {
-    resourceList.innerHTML = "<li>未找到匹配的资源</li>";
-    return;
-  }
-
-  results.forEach(item => {
-    const li = document.createElement("li");
-    const a = document.createElement("a");
-    a.href = `https://e.pcloud.link/publink/show?code=${item.pcloudCode}`;
-    a.textContent = `${item.title}`;
-    a.target = "_blank";
-    li.appendChild(a);
-    resourceList.appendChild(li);
-  });
-}
-
-
-
-// 下面是简化版的 renderResources 示例（你可以按实际代码替换或参考）
+// 渲染分类菜单
 function renderResources(data) {
   const sidebar = document.getElementById("sidebar");
   const resourceList = document.getElementById("resourceList");
   sidebar.innerHTML = '';
   resourceList.innerHTML = '';
 
-  // 加载分类菜单
   const categories = {};
   data.forEach(item => {
     if (!categories[item.type]) categories[item.type] = [];
@@ -112,8 +58,6 @@ function renderResources(data) {
     });
     sidebar.appendChild(section);
   }
-
-  // 初始状态可不加载任何资源
 }
 
 function showResources(type, subtype) {
@@ -125,7 +69,7 @@ function showResources(type, subtype) {
     const li = document.createElement("li");
     const a = document.createElement("a");
     a.href = `https://e.pcloud.link/publink/show?code=${src.pcloudCode}`;
-    a.textContent = `${type} - ${subtype}`;
+    a.textContent = `${type} / ${subtype}`;
     a.target = "_blank";
     li.appendChild(a);
     resourceList.appendChild(li);
@@ -133,3 +77,53 @@ function showResources(type, subtype) {
 
   document.getElementById("subcategoryTitle").textContent = `${type} / ${subtype}`;
 }
+
+// 搜索功能
+document.getElementById("searchInput").addEventListener("input", function (e) {
+  const keyword = e.target.value.trim().toLowerCase();
+  const results = [];
+
+  if (!keyword) {
+    document.getElementById("subcategoryTitle").textContent = "请选择分类";
+    document.getElementById("resourceList").innerHTML = "";
+    return;
+  }
+
+  testData.forEach(item => {
+    const title = `${item.type} ${item.subtype}`.toLowerCase();
+    if (title.includes(keyword)) {
+      item.sources.forEach(src => {
+        results.push({
+          title: `${item.type} / ${item.subtype}`,
+          pcloudCode: src.pcloudCode
+        });
+      });
+    }
+  });
+
+  showSearchResults(results, keyword);
+});
+
+function showSearchResults(results, keyword) {
+  const resourceList = document.getElementById("resourceList");
+  resourceList.innerHTML = '';
+  document.getElementById("subcategoryTitle").textContent = `搜索结果：「${keyword}」`;
+
+  if (results.length === 0) {
+    resourceList.innerHTML = "<li>未找到匹配的资源</li>";
+    return;
+  }
+
+  results.forEach(item => {
+    const li = document.createElement("li");
+    const a = document.createElement("a");
+    a.href = `https://e.pcloud.link/publink/show?code=${item.pcloudCode}`;
+    a.textContent = item.title;
+    a.target = "_blank";
+    li.appendChild(a);
+    resourceList.appendChild(li);
+  });
+}
+
+// 初始渲染
+renderResources(testData);
