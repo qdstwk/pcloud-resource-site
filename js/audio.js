@@ -62,10 +62,11 @@ async function loadData() {
                 name: file.name,
                 link: `https://e.pcloud.link/publink/show?code=${src.pcloudCode}#${file.name}`,
                 type: group.type,
-                subtype: item.subtype,
-                mtime: file.modified
+                subtype: item.subtype
               });
             });
+          } else {
+            console.warn("pCloud 请求失败", json);
           }
         } catch (e) {
           console.warn("加载失败", e);
@@ -73,6 +74,11 @@ async function loadData() {
       }
     }
   }
+
+  if (!tempFiles.length) {
+    document.getElementById("subcategoryTitle").textContent = "⚠️ 无法加载任何资源，请检查网络或配置";
+  }
+
   allFiles = tempFiles;
   localStorage.setItem("cache-音频", JSON.stringify(allFiles));
   renderSidebar();
@@ -83,6 +89,10 @@ function renderSidebar() {
   const sidebar = document.getElementById("sidebar");
   const subs = [...new Set(allFiles.map(f => f.subtype))];
   sidebar.innerHTML = '';
+  if (subs.length === 0) {
+    sidebar.innerHTML = "<em>⚠️ 未找到任何子分类</em>";
+    return;
+  }
   subs.forEach(sub => {
     const btn = document.createElement("button");
     btn.textContent = sub;
@@ -100,8 +110,10 @@ function showList(subtype) {
   const sortMode = document.getElementById("sortSelect").value;
   if (sortMode === "name") {
     files.sort((a, b) => a.name.localeCompare(b.name));
-  } else if (sortMode === "mtime") {
-    files.sort((a, b) => (b.mtime || '').localeCompare(a.mtime || ''));
+  }
+
+  if (files.length === 0) {
+    list.innerHTML = "<li><em>⚠️ 该分类暂无文件</em></li>";
   }
 
   files.forEach(f => {
@@ -127,6 +139,10 @@ document.getElementById("searchInput").addEventListener("input", function(e) {
     f.name.toLowerCase().includes(kw) ||
     f.subtype.toLowerCase().includes(kw)
   );
+
+  if (results.length === 0) {
+    list.innerHTML = "<li><em>无匹配文件</em></li>";
+  }
 
   results.forEach(f => {
     const li = document.createElement("li");
