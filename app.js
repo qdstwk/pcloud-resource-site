@@ -1,28 +1,45 @@
 const config = {
-  categories: [
+  "categories": [
     {
-      type: "音频",
-      subtype: "诗歌",
-      sources: [
-        { type: "remote", pcloudCode: "kZPMMfZiCcVI79eC9pKbDrMFeNAbursKdXk" }
+      "type": "视频",
+      "subcategories": [
+        {
+          "subtype": "属灵洞察力和敏感度",
+          "sources": [
+            {
+              "type": "remote",
+              "pcloudCode": "kZYkamZk37jjnbr42XWMUvWP1MDaYC87r1X"
+            }
+          ]
+        },
+        {
+          "subtype": "讲道信息",
+          "sources": [
+            {
+              "type": "remote",
+              "pcloudCode": "kZErJEZFfktW9umY6mJSDCwm6KgH5uA5VSk"
+            }
+          ]
+        }
       ]
     },
     {
-      type: "视频",
-      subtype: "属灵洞察力和敏感度",
-      sources: [
-        { type: "remote", pcloudCode: "kZYkamZk37jjnbr42XWMUvWP1MDaYC87r1X" }
-      ]
-    },
-    {
-      type: "视频",
-      subtype: "讲道信息",
-      sources: [
-        { type: "remote", pcloudCode: "kZErJEZFfktW9umY6mJSDCwm6KgH5uA5VSk" }
+      "type": "音频",
+      "subcategories": [
+        {
+          "subtype": "诗歌",
+          "sources": [
+            {
+              "type": "remote",
+              "pcloudCode": "kZPMMfZiCcVI79eC9pKbDrMFeNAbursKdXk"
+            }
+          ]
+        }
       ]
     }
   ]
 };
+
 
 const urlParams = new URLSearchParams(location.search);
 const currentType = location.pathname.replace("/", "") || "全部";
