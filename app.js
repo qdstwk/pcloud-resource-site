@@ -14,7 +14,13 @@ async function fetchRecursive(code, type, subtype) {
   const folderid = json.metadata.folderid;
   const listRes = await fetch(`https://eapi.pcloud.com/listfolder?folderid=${folderid}&recursive=1`);
   const listJson = await listRes.json();
+  
+  if (!listJson || listJson.result !== 0 || !listJson.metadata || !listJson.metadata.contents) {
+    console.warn("listfolder 获取失败：", listJson);
+    return [];
+  }
   const files = [];
+
 
   function traverse(items) {
     for (const item of items) {
