@@ -27,11 +27,11 @@ const config = {
       "type": "音频",
       "subcategories": [
         {
-          "subtype": "诗歌",
+          "subtype": "圣经音频",
           "sources": [
             {
               "type": "remote",
-              "pcloudCode": "kZPMMfZiCcVI79eC9pKbDrMFeNAbursKdXk"
+              "pcloudCode": "cBu7ZmVXIsq1Q5oSzxWsQ97paQBTLGhI7"
             }
           ]
         }
