@@ -106,10 +106,10 @@ function renderList(items) {
   filtered.forEach(item => {
     const div = document.createElement("div");
     div.className = "item";
-    div.innerHTML = \`
-      <strong>\${item.name}</strong><br>
-      <a href="\${item.url}" target="_blank">打开</a> - \${item.type} / \${item.subtype}
-    \`;
+    div.innerHTML = `
+  <strong>${item.name}</strong><br>
+  <a href="${item.url}" target="_blank">打开</a> - ${item.type} / ${item.subtype}
+`;
     resourceList.appendChild(div);
   });
 }
