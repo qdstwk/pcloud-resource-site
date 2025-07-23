@@ -1,20 +1,21 @@
-
 <!DOCTYPE html>
 <html lang="zh">
 <head>
   <meta charset="UTF-8">
-  <title>资源中心</title>
-  <link rel="stylesheet" href="style.css">
+  <title>资源分类</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    .category { margin-bottom: 30px; }
+    .category h2 { margin-bottom: 10px; }
+    ul { list-style: none; padding-left: 0; }
+    li { margin-bottom: 5px; }
+    a { text-decoration: none; color: blue; }
+    a:hover { text-decoration: underline; }
+  </style>
 </head>
 <body>
-  <h1>资源中心</h1>
-  <input type="text" id="searchInput" placeholder="搜索文件名...">
-  <select id="sortSelect">
-    <option value="name">按名称排序</option>
-    <option value="time">按时间排序</option>
-  </select>
-  <div id="loading">正在加载...</div>
-  <div id="resourceList"></div>
+  <h1>资源分类</h1>
+  <div id="content"></div>
   <script src="app.js"></script>
 </body>
 </html>
