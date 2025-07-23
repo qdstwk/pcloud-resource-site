@@ -1,47 +1,16 @@
-const config = {
-  "categories": [
-    {
-      "type": "视频",
-      "subcategories": [
-        {
-          "subtype": "属灵洞察力和敏感度",
-          "sources": [
-            {
-              "type": "remote",
-              "pcloudCode": "kZYkamZk37jjnbr42XWMUvWP1MDaYC87r1X"
-            }
-          ]
-        },
-        {
-          "subtype": "诗歌视频",
-          "sources": [
-            {
-              "type": "remote",
-              "pcloudCode": "kZ10FEZN4sV6JJfSKY4p6L9aDM1py7opvI7"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "音频",
-      "subcategories": [
-        {
-          "subtype": "圣经音频",
-          "sources": [
-            {
-              "type": "remote",
-              "pcloudCode": "kZuqFEZkWN05KTDOE8ICX3UCHKtvkV91Qik"
-            }
-          ]
-        }
-      ]
-    }
-  ]
-};
+fetch('final_config.json')
+  .then(res => res.json())
+  .then(config => {
+    buildPage(config);
+  })
+  .catch(err => {
+    console.error("加载配置失败：", err);
+  });
 
 function buildPage(config) {
   const content = document.getElementById('content');
+  content.innerHTML = ''; // 清空加载提示
+
   config.categories.forEach(category => {
     const catDiv = document.createElement('div');
     catDiv.className = 'category';
@@ -51,23 +20,44 @@ function buildPage(config) {
     catDiv.appendChild(title);
 
     const list = document.createElement('ul');
-    category.subcategories.forEach(sub => {
-      const li = document.createElement('li');
-      const link = document.createElement('a');
+    (category.subcategories || []).forEach(sub => {
+      const subItem = document.createElement('li');
+      subItem.textContent = sub.subtype;
 
-      // 默认使用第一个 source 的 pcloudCode
-      const code = sub.sources[0]?.pcloudCode;
-      link.href = `https://e.pcloud.link/publink/show?code=${code}`;
-      link.target = '_blank';
-      link.textContent = sub.subtype;
+      // 如果有子子类（如年份、月份），继续展开
+      if (sub.subcategories) {
+        const sublist = document.createElement('ul');
+        sub.subcategories.forEach(year => {
+          const yearItem = document.createElement('li');
+          yearItem.textContent = year.subtype;
 
-      li.appendChild(link);
-      list.appendChild(li);
+          if (year.subcategories) {
+            const monthList = document.createElement('ul');
+            year.subcategories.forEach(month => {
+              const monthItem = document.createElement('li');
+              const a = document.createElement('a');
+              a.textContent = month.subtype;
+              if (month.sources?.[0]?.pcloudCode) {
+                a.href = `https://e.pcloud.link/publink/show?code=${month.sources[0].pcloudCode}`;
+                a.target = '_blank';
+              } else {
+                a.href = '#';
+              }
+              monthItem.appendChild(a);
+              monthList.appendChild(monthItem);
+            });
+            yearItem.appendChild(monthList);
+          }
+
+          sublist.appendChild(yearItem);
+        });
+        subItem.appendChild(sublist);
+      }
+
+      list.appendChild(subItem);
     });
 
     catDiv.appendChild(list);
     content.appendChild(catDiv);
   });
 }
-
-buildPage(config);
