@@ -1,4 +1,3 @@
-
 const config = {
   "categories": [
     {
@@ -41,80 +40,34 @@ const config = {
   ]
 };
 
-const currentType = location.pathname.replace("/", "") || "全部";
-const searchInput = document.getElementById("searchInput");
-const sortSelect = document.getElementById("sortSelect");
-const loadingDiv = document.getElementById("loading");
-const resourceList = document.getElementById("resourceList");
-let allItems = [];
+function buildPage(config) {
+  const content = document.getElementById('content');
+  config.categories.forEach(category => {
+    const catDiv = document.createElement('div');
+    catDiv.className = 'category';
 
-async function fetchFolder(pcloudCode) {
-  try {
-    const url = `https://e.pcloud.link/publink/show?code=${pcloudCode}`;
-    const res = await fetch(url);
-    const html = await res.text();
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, "text/html");
+    const title = document.createElement('h2');
+    title.textContent = category.type;
+    catDiv.appendChild(title);
 
-    const fileLinks = Array.from(doc.querySelectorAll("a"))
-      .filter(a => a.href && (a.href.includes("?download") || /\.(mp3|mp4|pdf|jpg|png|txt|zip|m4a|mkv)$/i.test(a.href)))
-      .map(a => {
-        const name = a.textContent.trim();
-        const href = a.href;
-        return { name, url: href, time: Date.now() };
-      });
+    const list = document.createElement('ul');
+    category.subcategories.forEach(sub => {
+      const li = document.createElement('li');
+      const link = document.createElement('a');
 
-    return fileLinks;
-  } catch (e) {
-    console.warn("加载失败", pcloudCode, e);
-    return [];
-  }
-}
+      // 默认使用第一个 source 的 pcloudCode
+      const code = sub.sources[0]?.pcloudCode;
+      link.href = `https://e.pcloud.link/publink/show?code=${code}`;
+      link.target = '_blank';
+      link.textContent = sub.subtype;
 
-async function loadAll() {
-  loadingDiv.style.display = "block";
-  for (const cat of config.categories) {
-    if (cat.type !== currentType && currentType !== "全部") continue;
-    for (const sub of cat.subcategories) {
-      for (const src of sub.sources) {
-        const items = await fetchFolder(src.pcloudCode);
-        allItems = allItems.concat(items.map(item => ({
-          ...item,
-          type: cat.type,
-          subtype: sub.subtype
-        })));
-      }
-    }
-  }
-  renderList(allItems);
-  loadingDiv.style.display = "none";
-}
+      li.appendChild(link);
+      list.appendChild(li);
+    });
 
-function renderList(items) {
-  const keyword = (searchInput.value || "").toLowerCase();
-  const sortBy = sortSelect.value;
-
-  let filtered = items.filter(i => i.name.toLowerCase().includes(keyword));
-
-  if (sortBy === "name") {
-    filtered.sort((a, b) => a.name.localeCompare(b.name));
-  } else if (sortBy === "time") {
-    filtered.sort((a, b) => b.time - a.time);
-  }
-
-  resourceList.innerHTML = "";
-  filtered.forEach(item => {
-    const div = document.createElement("div");
-    div.className = "item";
-    div.innerHTML = `
-      <strong>${item.name}</strong><br>
-      <a href="${item.url}" target="_blank">打开</a> - ${item.type} / ${item.subtype}
-    `;
-    resourceList.appendChild(div);
+    catDiv.appendChild(list);
+    content.appendChild(catDiv);
   });
 }
 
-searchInput.addEventListener("input", () => renderList(allItems));
-sortSelect.addEventListener("change", () => renderList(allItems));
-
-loadAll();
+buildPage(config);
