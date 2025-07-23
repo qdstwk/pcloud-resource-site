@@ -2,15 +2,20 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-  <meta charset="UTF-8">
-  <title>资源中心</title>
-  <link rel="stylesheet" href="assets/style.css">
+  <meta charset="UTF-8" />
+  <title>资源中心（递归加载版）</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>资源分类</h1>
-  <ul>
-    <li><a href="audio.html">音频资源</a></li>
-    <li><a href="video.html">视频资源</a></li>
-  </ul>
+  <h1>资源中心</h1>
+  <input type="text" id="searchInput" placeholder="搜索文件名 / 分类">
+  <select id="sortSelect">
+    <option value="name">按名称排序</option>
+    <option value="type">按类型排序</option>
+  </select>
+  <div id="status">正在加载资源…</div>
+  <div id="sidebar"></div>
+  <div id="resourceList"></div>
+  <script src="app.js"></script>
 </body>
 </html>
