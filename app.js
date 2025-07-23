@@ -1,4 +1,3 @@
-
 let configData = null;
 
 fetch('final_config.json')
@@ -55,12 +54,30 @@ function renderFromHash() {
   } else if (current.sources) {
     current.sources.forEach(source => {
       const li = document.createElement('li');
-      const a = document.createElement('a');
-      a.textContent = source.pcloudCode || '文件链接';
-      a.href = 'https://e.pcloud.link/publink/show?code=' + source.pcloudCode;
-      a.target = '_blank';
-      li.appendChild(a);
+      li.textContent = '正在加载文件列表...';
       list.appendChild(li);
+
+      const url = 'https://e.pcloud.link/publink/show?code=' + source.pcloudCode;
+      fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const files = extractFileNamesFromHTML(html);
+          if (files.length > 0) {
+            const ul = document.createElement('ul');
+            files.forEach(name => {
+              const item = document.createElement('li');
+              item.textContent = name;
+              ul.appendChild(item);
+            });
+            li.innerHTML = '';
+            li.appendChild(ul);
+          } else {
+            li.textContent = '无法获取文件列表。';
+          }
+        })
+        .catch(() => {
+          li.textContent = '加载失败。';
+        });
     });
   } else {
     const msg = document.createElement('p');
@@ -69,4 +86,14 @@ function renderFromHash() {
   }
 
   content.appendChild(list);
+}
+
+function extractFileNamesFromHTML(html) {
+  const result = [];
+  const regex = /"name":"(.*?)"/g;
+  let match;
+  while ((match = regex.exec(html)) !== null) {
+    result.push(match[1]);
+  }
+  return Array.from(new Set(result));
 }
