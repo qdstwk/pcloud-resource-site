@@ -1,23 +1,20 @@
+
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
   <title>资源中心</title>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="remixicon.css" />
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <h1>资源中心</h1>
-    <input type="text" id="searchInput" placeholder="搜索文件名 / 讲员 / 日期等..." />
-    <select id="sortSelect">
-      <option value="name">按名称排序</option>
-      <option value="time">按时间排序</option>
-    </select>
-    <div id="loading">🔄 正在加载资源，请稍候...</div>
-  </header>
-  <main id="resourceList"></main>
+  <h1>资源中心</h1>
+  <input type="text" id="searchInput" placeholder="搜索文件名...">
+  <select id="sortSelect">
+    <option value="name">按名称排序</option>
+    <option value="time">按时间排序</option>
+  </select>
+  <div id="loading">正在加载...</div>
+  <div id="resourceList"></div>
   <script src="app.js"></script>
 </body>
 </html>

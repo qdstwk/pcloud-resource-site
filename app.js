@@ -1,3 +1,4 @@
+
 const config = {
   "categories": [
     {
@@ -39,7 +40,6 @@ const config = {
     }
   ]
 };
-
 
 const currentType = location.pathname.replace("/", "") || "全部";
 const searchInput = document.getElementById("searchInput");
