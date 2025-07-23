@@ -1471,7 +1471,286 @@
         },
         {
           "subtype": "圣经音频",
-          "sources": []
+          "subcategories": [
+            {
+              "subtype": "全文",
+              "sources": []
+            },
+            {
+              "subtype": "旧约",
+              "subcategories": [
+                {
+                  "subtype": "创世记",
+                  "sources": []
+                },
+                {
+                  "subtype": "出埃及记",
+                  "sources": []
+                },
+                {
+                  "subtype": "利未记",
+                  "sources": []
+                },
+                {
+                  "subtype": "民数记",
+                  "sources": []
+                },
+                {
+                  "subtype": "申命记",
+                  "sources": []
+                },
+                {
+                  "subtype": "约书亚记",
+                  "sources": []
+                },
+                {
+                  "subtype": "士师记",
+                  "sources": []
+                },
+                {
+                  "subtype": "路得记",
+                  "sources": []
+                },
+                {
+                  "subtype": "撒母耳记上",
+                  "sources": []
+                },
+                {
+                  "subtype": "撒母耳记下",
+                  "sources": []
+                },
+                {
+                  "subtype": "列王纪上",
+                  "sources": []
+                },
+                {
+                  "subtype": "列王纪下",
+                  "sources": []
+                },
+                {
+                  "subtype": "历代志上",
+                  "sources": []
+                },
+                {
+                  "subtype": "历代志下",
+                  "sources": []
+                },
+                {
+                  "subtype": "以斯拉记",
+                  "sources": []
+                },
+                {
+                  "subtype": "尼希米记",
+                  "sources": []
+                },
+                {
+                  "subtype": "以斯帖记",
+                  "sources": []
+                },
+                {
+                  "subtype": "约伯记",
+                  "sources": []
+                },
+                {
+                  "subtype": "诗篇",
+                  "sources": []
+                },
+                {
+                  "subtype": "箴言",
+                  "sources": []
+                },
+                {
+                  "subtype": "传道书",
+                  "sources": []
+                },
+                {
+                  "subtype": "雅歌",
+                  "sources": []
+                },
+                {
+                  "subtype": "以赛亚书",
+                  "sources": []
+                },
+                {
+                  "subtype": "耶利米书",
+                  "sources": []
+                },
+                {
+                  "subtype": "耶利米哀歌",
+                  "sources": []
+                },
+                {
+                  "subtype": "以西结书",
+                  "sources": []
+                },
+                {
+                  "subtype": "但以理书",
+                  "sources": []
+                },
+                {
+                  "subtype": "何西阿书",
+                  "sources": []
+                },
+                {
+                  "subtype": "约珥书",
+                  "sources": []
+                },
+                {
+                  "subtype": "阿摩司书",
+                  "sources": []
+                },
+                {
+                  "subtype": "俄巴底亚书",
+                  "sources": []
+                },
+                {
+                  "subtype": "约拿书",
+                  "sources": []
+                },
+                {
+                  "subtype": "弥迦书",
+                  "sources": []
+                },
+                {
+                  "subtype": "那鸿书",
+                  "sources": []
+                },
+                {
+                  "subtype": "哈巴谷书",
+                  "sources": []
+                },
+                {
+                  "subtype": "西番雅书",
+                  "sources": []
+                },
+                {
+                  "subtype": "哈该书",
+                  "sources": []
+                },
+                {
+                  "subtype": "撒迦利亚书",
+                  "sources": []
+                },
+                {
+                  "subtype": "玛拉基书",
+                  "sources": []
+                }
+              ]
+            },
+            {
+              "subtype": "新约",
+              "subcategories": [
+                {
+                  "subtype": "马太福音",
+                  "sources": []
+                },
+                {
+                  "subtype": "马可福音",
+                  "sources": []
+                },
+                {
+                  "subtype": "路加福音",
+                  "sources": []
+                },
+                {
+                  "subtype": "约翰福音",
+                  "sources": []
+                },
+                {
+                  "subtype": "使徒行传",
+                  "sources": []
+                },
+                {
+                  "subtype": "罗马书",
+                  "sources": []
+                },
+                {
+                  "subtype": "哥林多前书",
+                  "sources": []
+                },
+                {
+                  "subtype": "哥林多后书",
+                  "sources": []
+                },
+                {
+                  "subtype": "加拉太书",
+                  "sources": []
+                },
+                {
+                  "subtype": "以弗所书",
+                  "sources": []
+                },
+                {
+                  "subtype": "腓立比书",
+                  "sources": []
+                },
+                {
+                  "subtype": "歌罗西书",
+                  "sources": []
+                },
+                {
+                  "subtype": "帖撒罗尼迦前书",
+                  "sources": []
+                },
+                {
+                  "subtype": "帖撒罗尼迦后书",
+                  "sources": []
+                },
+                {
+                  "subtype": "提摩太前书",
+                  "sources": []
+                },
+                {
+                  "subtype": "提摩太后书",
+                  "sources": []
+                },
+                {
+                  "subtype": "提多书",
+                  "sources": []
+                },
+                {
+                  "subtype": "腓利门书",
+                  "sources": []
+                },
+                {
+                  "subtype": "希伯来书",
+                  "sources": []
+                },
+                {
+                  "subtype": "雅各书",
+                  "sources": []
+                },
+                {
+                  "subtype": "彼得前书",
+                  "sources": []
+                },
+                {
+                  "subtype": "彼得后书",
+                  "sources": []
+                },
+                {
+                  "subtype": "约翰一书",
+                  "sources": []
+                },
+                {
+                  "subtype": "约翰二书",
+                  "sources": []
+                },
+                {
+                  "subtype": "约翰三书",
+                  "sources": []
+                },
+                {
+                  "subtype": "犹大书",
+                  "sources": []
+                },
+                {
+                  "subtype": "启示录",
+                  "sources": []
+                }
+              ]
+            }
+          ]
         },
         {
           "subtype": "诗歌音频",
