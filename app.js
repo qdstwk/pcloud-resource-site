@@ -41,31 +41,30 @@ const config = {
 };
 
 
-const urlParams = new URLSearchParams(location.search);
 const currentType = location.pathname.replace("/", "") || "全部";
 const searchInput = document.getElementById("searchInput");
 const sortSelect = document.getElementById("sortSelect");
 const loadingDiv = document.getElementById("loading");
 const resourceList = document.getElementById("resourceList");
-
 let allItems = [];
 
 async function fetchFolder(pcloudCode) {
   try {
-    const res = await fetch(`https://e.pcloud.link/publink/show?code=${pcloudCode}`);
-    const text = await res.text();
+    const url = `https://e.pcloud.link/publink/show?code=${pcloudCode}`;
+    const res = await fetch(url);
+    const html = await res.text();
     const parser = new DOMParser();
-    const doc = parser.parseFromString(text, "text/html");
-    const links = [...doc.querySelectorAll("a")];
-    return links
+    const doc = parser.parseFromString(html, "text/html");
+
+    const fileLinks = Array.from(doc.querySelectorAll("a"))
+      .filter(a => a.href && a.href.includes("/dl/"))
       .map(a => {
         const name = a.textContent.trim();
         const href = a.href;
-        if (href && name && !href.endsWith("/")) {
-          return { name, url: href, time: Date.now() };
-        }
-      })
-      .filter(Boolean);
+        return { name, url: href, time: Date.now() };
+      });
+
+    return fileLinks;
   } catch (e) {
     console.warn("加载失败", pcloudCode, e);
     return [];
@@ -92,12 +91,10 @@ async function loadAll() {
 }
 
 function renderList(items) {
-  const keyword = (searchInput.value || "").trim().toLowerCase();
+  const keyword = (searchInput.value || "").toLowerCase();
   const sortBy = sortSelect.value;
 
-  let filtered = items.filter(i =>
-    i.name.toLowerCase().includes(keyword)
-  );
+  let filtered = items.filter(i => i.name.toLowerCase().includes(keyword));
 
   if (sortBy === "name") {
     filtered.sort((a, b) => a.name.localeCompare(b.name));
@@ -109,14 +106,15 @@ function renderList(items) {
   filtered.forEach(item => {
     const div = document.createElement("div");
     div.className = "item";
-    div.innerHTML = `<strong>${item.name}</strong><br><a href="${item.url}" target="_blank">打开</a>`;
+    div.innerHTML = \`
+      <strong>\${item.name}</strong><br>
+      <a href="\${item.url}" target="_blank">打开</a> - \${item.type} / \${item.subtype}
+    \`;
     resourceList.appendChild(div);
   });
 }
 
 searchInput.addEventListener("input", () => renderList(allItems));
 sortSelect.addEventListener("change", () => renderList(allItems));
-
-loadAll();
 
 loadAll();
