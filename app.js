@@ -57,7 +57,7 @@ async function fetchFolder(pcloudCode) {
     const doc = parser.parseFromString(html, "text/html");
 
     const fileLinks = Array.from(doc.querySelectorAll("a"))
-      .filter(a => a.href && a.href.includes("/dl/"))
+      .filter(a => a.href && (a.href.includes("?download") || /\.(mp3|mp4|pdf|jpg|png|txt|zip|m4a|mkv)$/i.test(a.href)))
       .map(a => {
         const name = a.textContent.trim();
         const href = a.href;
@@ -107,9 +107,9 @@ function renderList(items) {
     const div = document.createElement("div");
     div.className = "item";
     div.innerHTML = `
-  <strong>${item.name}</strong><br>
-  <a href="${item.url}" target="_blank">打开</a> - ${item.type} / ${item.subtype}
-`;
+      <strong>${item.name}</strong><br>
+      <a href="${item.url}" target="_blank">打开</a> - ${item.type} / ${item.subtype}
+    `;
     resourceList.appendChild(div);
   });
 }
