@@ -13,11 +13,11 @@ const config = {
           ]
         },
         {
-          "subtype": "讲道信息",
+          "subtype": "诗歌视频",
           "sources": [
             {
               "type": "remote",
-              "pcloudCode": "kZErJEZFfktW9umY6mJSDCwm6KgH5uA5VSk"
+              "pcloudCode": "kZ10FEZN4sV6JJfSKY4p6L9aDM1py7opvI7"
             }
           ]
         }
