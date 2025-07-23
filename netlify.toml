@@ -1,0 +1,7 @@
+
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+[functions."fetch-folder"]
+  node_version = "18"
