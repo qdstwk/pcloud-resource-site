@@ -8,56 +8,7 @@
           "subcategories": [
             {
               "subtype": "2013之前",
-              "subcategories": [
-                {
-                  "subtype": "1月",
-                  "sources": []
-                },
-                {
-                  "subtype": "2月",
-                  "sources": []
-                },
-                {
-                  "subtype": "3月",
-                  "sources": []
-                },
-                {
-                  "subtype": "4月",
-                  "sources": []
-                },
-                {
-                  "subtype": "5月",
-                  "sources": []
-                },
-                {
-                  "subtype": "6月",
-                  "sources": []
-                },
-                {
-                  "subtype": "7月",
-                  "sources": []
-                },
-                {
-                  "subtype": "8月",
-                  "sources": []
-                },
-                {
-                  "subtype": "9月",
-                  "sources": []
-                },
-                {
-                  "subtype": "10月",
-                  "sources": []
-                },
-                {
-                  "subtype": "11月",
-                  "sources": []
-                },
-                {
-                  "subtype": "12月",
-                  "sources": []
-                }
-              ]
+              "sources": []
             },
             {
               "subtype": "2013年",
@@ -818,63 +769,14 @@
       ]
     },
     {
-      "type": "教会音频",
+      "type": "教会公开音频",
       "subcategories": [
         {
           "subtype": "主日信息",
           "subcategories": [
             {
               "subtype": "2013之前",
-              "subcategories": [
-                {
-                  "subtype": "1月",
-                  "sources": []
-                },
-                {
-                  "subtype": "2月",
-                  "sources": []
-                },
-                {
-                  "subtype": "3月",
-                  "sources": []
-                },
-                {
-                  "subtype": "4月",
-                  "sources": []
-                },
-                {
-                  "subtype": "5月",
-                  "sources": []
-                },
-                {
-                  "subtype": "6月",
-                  "sources": []
-                },
-                {
-                  "subtype": "7月",
-                  "sources": []
-                },
-                {
-                  "subtype": "8月",
-                  "sources": []
-                },
-                {
-                  "subtype": "9月",
-                  "sources": []
-                },
-                {
-                  "subtype": "10月",
-                  "sources": []
-                },
-                {
-                  "subtype": "11月",
-                  "sources": []
-                },
-                {
-                  "subtype": "12月",
-                  "sources": []
-                }
-              ]
+              "sources": []
             },
             {
               "subtype": "2013年",

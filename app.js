@@ -1,63 +1,72 @@
+
+let configData = null;
+
 fetch('final_config.json')
   .then(res => res.json())
   .then(config => {
-    buildPage(config);
-  })
-  .catch(err => {
-    console.error("加载配置失败：", err);
+    configData = config;
+    renderFromHash();
   });
 
-function buildPage(config) {
+window.addEventListener('hashchange', renderFromHash);
+
+function renderFromHash() {
   const content = document.getElementById('content');
-  content.innerHTML = ''; // 清空加载提示
+  const title = document.getElementById('title');
+  const backLink = document.getElementById('backLink');
+  content.innerHTML = '';
 
-  config.categories.forEach(category => {
-    const catDiv = document.createElement('div');
-    catDiv.className = 'category';
+  const hash = decodeURIComponent(location.hash.slice(1));
+  const path = hash ? hash.split('/') : [];
 
-    const title = document.createElement('h2');
-    title.textContent = category.type;
-    catDiv.appendChild(title);
+  let current = { subcategories: configData.categories };
+  let parentPath = [];
 
-    const list = document.createElement('ul');
-    (category.subcategories || []).forEach(sub => {
-      const subItem = document.createElement('li');
-      subItem.textContent = sub.subtype;
+  for (let p of path) {
+    const next = (current.subcategories || []).find(item => item.subtype === p || item.type === p);
+    if (next) {
+      parentPath.push(current);
+      current = next;
+    } else {
+      break;
+    }
+  }
 
-      // 如果有子子类（如年份、月份），继续展开
-      if (sub.subcategories) {
-        const sublist = document.createElement('ul');
-        sub.subcategories.forEach(year => {
-          const yearItem = document.createElement('li');
-          yearItem.textContent = year.subtype;
+  title.textContent = path[path.length - 1] || '资源分类';
 
-          if (year.subcategories) {
-            const monthList = document.createElement('ul');
-            year.subcategories.forEach(month => {
-              const monthItem = document.createElement('li');
-              const a = document.createElement('a');
-              a.textContent = month.subtype;
-              if (month.sources?.[0]?.pcloudCode) {
-                a.href = `https://e.pcloud.link/publink/show?code=${month.sources[0].pcloudCode}`;
-                a.target = '_blank';
-              } else {
-                a.href = '#';
-              }
-              monthItem.appendChild(a);
-              monthList.appendChild(monthItem);
-            });
-            yearItem.appendChild(monthList);
-          }
+  if (path.length > 0) {
+    backLink.style.display = 'inline';
+    backLink.href = '#' + path.slice(0, -1).join('/');
+  } else {
+    backLink.style.display = 'none';
+  }
 
-          sublist.appendChild(yearItem);
-        });
-        subItem.appendChild(sublist);
-      }
+  const list = document.createElement('ul');
 
-      list.appendChild(subItem);
+  if (current.subcategories) {
+    current.subcategories.forEach(sub => {
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.textContent = sub.subtype || sub.type;
+      a.href = '#' + [...path, sub.subtype || sub.type].join('/');
+      li.appendChild(a);
+      list.appendChild(li);
     });
+  } else if (current.sources) {
+    current.sources.forEach(source => {
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.textContent = source.pcloudCode || '文件链接';
+      a.href = 'https://e.pcloud.link/publink/show?code=' + source.pcloudCode;
+      a.target = '_blank';
+      li.appendChild(a);
+      list.appendChild(li);
+    });
+  } else {
+    const msg = document.createElement('p');
+    msg.textContent = '此分类暂无内容。';
+    content.appendChild(msg);
+  }
 
-    catDiv.appendChild(list);
-    content.appendChild(catDiv);
-  });
+  content.appendChild(list);
 }
