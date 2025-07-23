@@ -10,15 +10,17 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: write   # ✨ 允许推送到仓库
+      contents: write
 
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
 
-      - name: Force empty commit
+      - name: Update timestamp file
         run: |
+          echo "Last deployed at $(date -u)" > deploy-timestamp.txt
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git commit --allow-empty -m "🕒 Weekly Netlify Deploy"
+          git add deploy-timestamp.txt
+          git commit -m "📦 Auto Deploy at $(date -u)"
           git push origin main
