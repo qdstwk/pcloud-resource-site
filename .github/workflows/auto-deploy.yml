@@ -2,13 +2,16 @@ name: Netlify Auto Deploy
 
 on:
   schedule:
-    # 每周一凌晨 2 点（UTC 时间），你可以改为别的时间
     - cron: '0 2 * * 1'
-  workflow_dispatch: # 允许手动触发
+  workflow_dispatch:
 
 jobs:
   trigger:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write   # ✨ 允许推送到仓库
+
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
