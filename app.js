@@ -7,20 +7,13 @@ const links = [
 let allFiles = [];
 
 async function fetchRecursive(code, type, subtype) {
-  const res = await fetch(`https://eapi.pcloud.com/showpublink?code=${code}`);
+  const res = await fetch(`/.netlify/functions/fetch-folder?pcloudCode=${code}`);
   const json = await res.json();
   if (!json.metadata || !json.metadata.folderid) return [];
 
-  const folderid = json.metadata.folderid;
-  const listRes = await fetch(`https://eapi.pcloud.com/listfolder?folderid=${folderid}&recursive=1`);
-  const listJson = await listRes.json();
+  const contents = json;
   
-  if (!listJson || listJson.result !== 0 || !listJson.metadata || !listJson.metadata.contents) {
-    console.warn("listfolder 获取失败：", listJson);
-    return [];
-  }
   const files = [];
-
 
   function traverse(items) {
     for (const item of items) {
@@ -36,7 +29,7 @@ async function fetchRecursive(code, type, subtype) {
     }
   }
 
-  traverse(listJson.metadata.contents || []);
+  traverse(contents);
   return files;
 }
 
