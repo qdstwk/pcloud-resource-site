@@ -1,3 +1,4 @@
+
 let configData = null;
 
 fetch('final_config.json')
@@ -54,14 +55,12 @@ function renderFromHash() {
   } else if (current.sources) {
     current.sources.forEach(source => {
       const li = document.createElement('li');
-      li.textContent = '正在加载文件列表...';
+      li.textContent = '正在加载文件...';
       list.appendChild(li);
 
-      const url = 'https://e.pcloud.link/publink/show?code=' + source.pcloudCode;
-      fetch(url)
-        .then(res => res.text())
-        .then(html => {
-          const files = extractFileNamesFromHTML(html);
+      fetch(`/.netlify/functions/fetchFiles?pcloudCode=${source.pcloudCode}`)
+        .then(res => res.json())
+        .then(files => {
           if (files.length > 0) {
             const ul = document.createElement('ul');
             files.forEach(name => {
@@ -72,7 +71,7 @@ function renderFromHash() {
             li.innerHTML = '';
             li.appendChild(ul);
           } else {
-            li.textContent = '无法获取文件列表。';
+            li.textContent = '没有找到文件。';
           }
         })
         .catch(() => {
@@ -86,14 +85,4 @@ function renderFromHash() {
   }
 
   content.appendChild(list);
-}
-
-function extractFileNamesFromHTML(html) {
-  const result = [];
-  const regex = /"name":"(.*?)"/g;
-  let match;
-  while ((match = regex.exec(html)) !== null) {
-    result.push(match[1]);
-  }
-  return Array.from(new Set(result));
 }
