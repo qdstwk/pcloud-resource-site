@@ -1,98 +1,101 @@
-
-const links = [
-  { type: "音频", subtype: "圣经朗读", code: "kZPMMfZiCcVI79eC9pKbDrMFeNAbursKdXk" },
-  { type: "视频", subtype: "讲道信息", code: "kZErJEZFfktW9umY6mJSDCwm6KgH5uA5VSk" }
-];
-
-let allFiles = [];
-
-async function fetchRecursive(code, type, subtype) {
-  const res = await fetch(`/.netlify/functions/fetch-folder?pcloudCode=${code}`);
-  const json = await res.json();
-  if (!json.metadata || !json.metadata.folderid) return [];
-
-  const contents = json;
-  
-  const files = [];
-
-  function traverse(items) {
-    for (const item of items) {
-      if (item.isfolder && item.contents) {
-        traverse(item.contents);
-      } else if (!item.isfolder) {
-        files.push({
-          name: item.name,
-          link: `https://e.pcloud.link/publink/show?code=${code}#${item.name}`,
-          type, subtype
-        });
-      }
+const config = {
+  categories: [
+    {
+      type: "音频",
+      subtype: "诗歌",
+      sources: [
+        { type: "remote", pcloudCode: "kZPMMfZiCcVI79eC9pKbDrMFeNAbursKdXk" }
+      ]
+    },
+    {
+      type: "视频",
+      subtype: "属灵洞察力和敏感度",
+      sources: [
+        { type: "remote", pcloudCode: "kZYkamZk37jjnbr42XWMUvWP1MDaYC87r1X" }
+      ]
+    },
+    {
+      type: "视频",
+      subtype: "讲道信息",
+      sources: [
+        { type: "remote", pcloudCode: "kZErJEZFfktW9umY6mJSDCwm6KgH5uA5VSk" }
+      ]
     }
-  }
+  ]
+};
 
-  traverse(contents);
-  return files;
+const urlParams = new URLSearchParams(location.search);
+const currentType = location.pathname.replace("/", "") || "全部";
+const searchInput = document.getElementById("searchInput");
+const sortSelect = document.getElementById("sortSelect");
+const loadingDiv = document.getElementById("loading");
+const resourceList = document.getElementById("resourceList");
+
+let allItems = [];
+
+async function fetchFolder(pcloudCode) {
+  try {
+    const res = await fetch(`https://e.pcloud.link/publink/show?code=${pcloudCode}`);
+    const text = await res.text();
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(text, "text/html");
+    const links = [...doc.querySelectorAll("a")];
+    return links
+      .map(a => {
+        const name = a.textContent.trim();
+        const href = a.href;
+        if (href && name && !href.endsWith("/")) {
+          return { name, url: href, time: Date.now() }; // 模拟时间
+        }
+      })
+      .filter(Boolean);
+  } catch (e) {
+    console.warn("加载失败", pcloudCode, e);
+    return [];
+  }
 }
 
 async function loadAll() {
-  let status = document.getElementById("status");
-  let sidebar = document.getElementById("sidebar");
-  let list = document.getElementById("resourceList");
+  loadingDiv.style.display = "block";
+  for (const cat of config.categories) {
+    if (cat.type !== currentType && currentType !== "全部") continue;
+    for (const src of cat.sources) {
+      const items = await fetchFolder(src.pcloudCode);
+      allItems = allItems.concat(items.map(item => ({
+        ...item,
+        type: cat.type,
+        subtype: cat.subtype
+      })));
+    }
+  }
+  renderList(allItems);
+  loadingDiv.style.display = "none";
+}
 
-  for (const l of links) {
-    const files = await fetchRecursive(l.code, l.type, l.subtype);
-    allFiles = allFiles.concat(files);
+function renderList(items) {
+  const keyword = (searchInput.value || "").trim().toLowerCase();
+  const sortBy = sortSelect.value;
+
+  let filtered = items.filter(i =>
+    i.name.toLowerCase().includes(keyword)
+  );
+
+  if (sortBy === "name") {
+    filtered.sort((a, b) => a.name.localeCompare(b.name));
+  } else if (sortBy === "time") {
+    filtered.sort((a, b) => b.time - a.time);
   }
 
-  const subtypes = [...new Set(allFiles.map(f => f.subtype))];
-  sidebar.innerHTML = '';
-  subtypes.forEach(sub => {
-    const btn = document.createElement("button");
-    btn.textContent = sub;
-    btn.onclick = () => showList(sub);
-    sidebar.appendChild(btn);
+  resourceList.innerHTML = "";
+  filtered.forEach(item => {
+    const div = document.createElement("div");
+    div.className = "item";
+    div.innerHTML = `<strong>${item.name}</strong><br><a href="${item.url}" target="_blank">打开</a>`;
+    resourceList.appendChild(div);
   });
-
-  status.textContent = "✅ 加载完成，共 " + allFiles.length + " 个文件";
 }
 
-function showList(subtype) {
-  const list = document.getElementById("resourceList");
-  const sort = document.getElementById("sortSelect").value;
-  list.innerHTML = '';
-  let subset = allFiles.filter(f => f.subtype === subtype);
-  if (sort === "name") subset.sort((a,b) => a.name.localeCompare(b.name));
-  if (sort === "type") subset.sort((a,b) => a.type.localeCompare(b.type));
-  const ul = document.createElement("ul");
-  subset.forEach(f => {
-    const li = document.createElement("li");
-    li.innerHTML = `<a href="${f.link}" target="_blank">${f.name}</a>`;
-    ul.appendChild(li);
-  });
-  list.appendChild(ul);
-}
-
-document.getElementById("searchInput").addEventListener("input", function(e) {
-  const kw = e.target.value.trim().toLowerCase();
-  const list = document.getElementById("resourceList");
-  list.innerHTML = '';
-  if (!kw) return;
-
-  const results = allFiles.filter(f =>
-    f.name.toLowerCase().includes(kw) || f.subtype.toLowerCase().includes(kw)
-  );
-  const ul = document.createElement("ul");
-  results.forEach(f => {
-    const li = document.createElement("li");
-    const highlighted = f.name.replace(new RegExp(kw, "gi"), m => `<mark>${m}</mark>`);
-    li.innerHTML = `<a href="${f.link}" target="_blank">${highlighted}</a>`;
-    ul.appendChild(li);
-  });
-  list.appendChild(ul);
-});
-
-document.getElementById("sortSelect").addEventListener("change", () => {
-  const firstSub = allFiles[0]?.subtype;
-  if (firstSub) showList(firstSub);
-});
+searchInput.addEventListener("input", () => renderList(allItems));
+sortSelect.addEventListener("change", () => renderList(allItems));
 
 loadAll();
