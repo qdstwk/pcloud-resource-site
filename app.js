@@ -62,7 +62,7 @@ async function fetchFolder(pcloudCode) {
         const name = a.textContent.trim();
         const href = a.href;
         if (href && name && !href.endsWith("/")) {
-          return { name, url: href, time: Date.now() }; // 模拟时间
+          return { name, url: href, time: Date.now() };
         }
       })
       .filter(Boolean);
@@ -76,13 +76,15 @@ async function loadAll() {
   loadingDiv.style.display = "block";
   for (const cat of config.categories) {
     if (cat.type !== currentType && currentType !== "全部") continue;
-    for (const src of cat.sources) {
-      const items = await fetchFolder(src.pcloudCode);
-      allItems = allItems.concat(items.map(item => ({
-        ...item,
-        type: cat.type,
-        subtype: cat.subtype
-      })));
+    for (const sub of cat.subcategories) {
+      for (const src of sub.sources) {
+        const items = await fetchFolder(src.pcloudCode);
+        allItems = allItems.concat(items.map(item => ({
+          ...item,
+          type: cat.type,
+          subtype: sub.subtype
+        })));
+      }
     }
   }
   renderList(allItems);
@@ -114,5 +116,7 @@ function renderList(items) {
 
 searchInput.addEventListener("input", () => renderList(allItems));
 sortSelect.addEventListener("change", () => renderList(allItems));
+
+loadAll();
 
 loadAll();
