@@ -765,9 +765,8 @@
         {
           "subtype": "诗歌MV",
           "sources": [{
-              "pcloudCode": "kZ10FEZN4sV6JJfSKY4p6L9aDM1py7opvI7"
-            }
-      ]
+                       "pcloudCode": "kZ10FEZN4sV6JJfSKY4p6L9aDM1py7opvI7"
+                     }]  // ✅ 补全了 `]` 和 `}`
     },
     {
       "type": "教会公开音频",
