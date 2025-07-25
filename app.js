@@ -1,4 +1,3 @@
-
 let configData = null;
 
 fetch('final_config.json')
@@ -48,7 +47,15 @@ function renderFromHash() {
       const li = document.createElement('li');
       const a = document.createElement('a');
       a.textContent = sub.subtype || sub.type;
-      a.href = '#' + [...path, sub.subtype || sub.type].join('/');
+      
+      // 如果是叶子节点且有源文件，直接生成共享链接
+      if (!sub.subcategories && sub.sources && sub.sources.length > 0) {
+        a.href = 'https://e.pcloud.link/publink/show?code=' + sub.sources[0].pcloudCode;
+        a.target = '_blank';
+      } else {
+        a.href = '#' + [...path, sub.subtype || sub.type].join('/');
+      }
+      
       li.appendChild(a);
       list.appendChild(li);
     });
