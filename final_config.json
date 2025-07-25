@@ -764,8 +764,9 @@
         },
         {
           "subtype": "诗歌MV",
-          "sources": []
-        }
+          "sources": [{
+              "pcloudCode": "kZ10FEZN4sV6JJfSKY4p6L9aDM1py7opvI7"
+            }
       ]
     },
     {
