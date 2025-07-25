@@ -760,19 +760,11 @@
         },
         {
           "subtype": "属灵洞察力和敏感度",
-          "sources": [
-            {
-              "pcloudCode": "kZYkamZk37jjnbr42XWMUvWP1MDaYC87r1X"
-            }
-          ]
+          "sources": []
         },
         {
           "subtype": "诗歌MV",
-          "sources": [
-            {
-              "pcloudCode": "kZ10FEZN4sV6JJfSKY4p6L9aDM1py7opvI7"
-            }
-          ]
+          "sources": []
         }
       ]
     },
@@ -1482,11 +1474,7 @@
           "subcategories": [
             {
               "subtype": "全文",
-              "sources": [
-                {
-                  "pcloudCode": "kZuqFEZkWN05KTDOE8ICX3UCHKtvkV91Qik"
-                }
-              ]
+              "sources": []
             },
             {
               "subtype": "旧约",

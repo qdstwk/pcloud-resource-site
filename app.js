@@ -55,28 +55,12 @@ function renderFromHash() {
   } else if (current.sources) {
     current.sources.forEach(source => {
       const li = document.createElement('li');
-      li.textContent = '正在加载文件...';
+      const a = document.createElement('a');
+      a.textContent = source.pcloudCode || '文件链接';
+      a.href = 'https://e.pcloud.link/publink/show?code=' + source.pcloudCode;
+      a.target = '_blank';
+      li.appendChild(a);
       list.appendChild(li);
-
-      fetch(`/.netlify/functions/fetchFiles?pcloudCode=${source.pcloudCode}`)
-        .then(res => res.json())
-        .then(files => {
-          if (files.length > 0) {
-            const ul = document.createElement('ul');
-            files.forEach(name => {
-              const item = document.createElement('li');
-              item.textContent = name;
-              ul.appendChild(item);
-            });
-            li.innerHTML = '';
-            li.appendChild(ul);
-          } else {
-            li.textContent = '没有找到文件。';
-          }
-        })
-        .catch(() => {
-          li.textContent = '加载失败。';
-        });
     });
   } else {
     const msg = document.createElement('p');
