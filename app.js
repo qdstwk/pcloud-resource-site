@@ -1,124 +1,113 @@
-let configData = null;
+document.addEventListener('DOMContentLoaded', () => {
+  fetch('final_config.json')
+    .then(res => res.json())
+    .then(config => {
+      window.resourceConfig = config;
+      initNavigation();
+    });
+});
 
-fetch('final_config.json')
-  .then(res => res.json())
-  .then(config => {
-    configData = config;
-    renderFromHash();
-  })
-  .catch(error => {
-    console.error('加载配置失败:', error);
-    document.getElementById('content').innerHTML = 
-      '<p class="error">加载配置失败，请刷新页面</p>';
-  });
+function initNavigation() {
+  const render = () => {
+    const hash = window.location.hash.slice(1);
+    const path = hash ? decodeURIComponent(hash).split('/') : [];
+    
+    const { current, title } = resolvePath(path, window.resourceConfig);
+    renderUI(current, title, path);
+  };
 
-window.addEventListener('hashchange', renderFromHash);
+  window.addEventListener('hashchange', render);
+  render();
+}
 
-function renderFromHash() {
-  const content = document.getElementById('content');
-  const title = document.getElementById('title');
+function resolvePath(path, config) {
+  let current = { items: config.categories };
+  let breadcrumbs = ['资源分类'];
+  
+  for (const segment of path) {
+    const found = current.items.find(
+      item => item.type === segment || item.subtype === segment
+    );
+    if (!found) break;
+    
+    current = found;
+    breadcrumbs.push(found.subtype || found.type);
+    current.items = found.subcategories || [];
+  }
+  
+  return {
+    current,
+    title: breadcrumbs[breadcrumbs.length - 1],
+    breadcrumbs
+  };
+}
+
+function renderUI(current, title, path) {
+  document.getElementById('title').textContent = title;
+  
   const backLink = document.getElementById('backLink');
+  backLink.style.display = path.length ? 'inline' : 'none';
+  backLink.href = path.length > 1 ? 
+    '#' + path.slice(0, -1).join('/') : '#';
+
+  const content = document.getElementById('content');
   content.innerHTML = '';
 
-  const hash = decodeURIComponent(location.hash.slice(1));
-  const path = hash ? hash.split('/') : [];
-
-  let current = { subcategories: configData.categories };
-  let fullPath = [];
-
-  // 导航到当前分类
-  for (let p of path) {
-    const next = (current.subcategories || []).find(item => 
-      item.subtype === p || item.type === p
-    );
-    if (next) {
-      fullPath.push(next.subtype || next.type);
-      current = next;
-    }
-  }
-
-  title.textContent = fullPath[fullPath.length - 1] || '资源分类';
-
-  // 返回链接处理
-  if (fullPath.length > 0) {
-    backLink.style.display = 'inline';
-    backLink.href = '#' + fullPath.slice(0, -1).join('/');
+  if (current.sources) {
+    renderFileList(current.sources, content);
+  } else if (current.items && current.items.length) {
+    renderCategoryList(current.items, content);
   } else {
-    backLink.style.display = 'none';
-  }
-
-  // 渲染内容
-  if (current.subcategories) {
-    renderCategories(current.subcategories, fullPath, content);
-  } 
-  else if (current.sources && current.sources.length > 0) {
-    renderFiles(current.sources, content);
-  }
-  else {
-    content.innerHTML = '<p class="empty">此分类暂无内容</p>';
+    content.innerHTML = '<p class="empty-msg">此分类暂无内容</p>';
   }
 }
 
-function renderCategories(subcategories, currentPath, container) {
-  const list = document.createElement('ul');
-  list.className = 'category-list';
-
-  subcategories.forEach(item => {
+function renderCategoryList(items, container) {
+  const ul = document.createElement('ul');
+  
+  items.forEach(item => {
     const li = document.createElement('li');
+    li.className = 'category-item';
+    
     const a = document.createElement('a');
-    
     a.textContent = item.subtype || item.type;
-    a.href = '#' + [...currentPath, item.subtype || item.type].join('/');
+    a.href = item.sources ? 
+      `#${item.subtype || item.type}` : 
+      `#${item.subtype || item.type}`;
     
-    // 如果是叶子节点且有资源，添加文件数量提示
-    if (!item.subcategories && item.sources?.length > 0) {
-      const count = document.createElement('span');
-      count.className = 'file-count';
-      count.textContent = ` (${item.sources.length}个文件)`;
-      a.appendChild(count);
+    if (item.sources) {
+      a.onclick = (e) => {
+        e.preventDefault();
+        renderFileList(item.sources, container);
+        document.getElementById('title').textContent = item.subtype || item.type;
+      };
     }
     
     li.appendChild(a);
-    list.appendChild(li);
+    ul.appendChild(li);
   });
-
-  container.appendChild(list);
+  
+  container.appendChild(ul);
 }
 
-function renderFiles(sources, container) {
-  container.innerHTML = '<h3>文件列表</h3>';
+function renderFileList(sources, container) {
+  const ul = document.createElement('ul');
   
-  const list = document.createElement('ul');
-  list.className = 'file-list';
-
   sources.forEach(source => {
     if (!source.pcloudCode) return;
     
     const li = document.createElement('li');
     li.className = 'file-item';
     
-    const icon = document.createElement('span');
-    icon.className = 'file-icon';
-    icon.textContent = '📁'; // 默认文件夹图标
+    const a = document.createElement('a');
+    a.textContent = source.name || `资源 (${source.pcloudCode.slice(0, 6)}...)`;
+    a.href = `https://e.pcloud.link/publink/show?code=${source.pcloudCode}`;
+    a.target = '_blank';
     
-    const link = document.createElement('a');
-    link.href = `https://e.pcloud.link/publink/show?code=${source.pcloudCode}`;
-    link.target = '_blank';
-    
-    // 从链接中提取有意义的名称
-    const name = source.pcloudCode 
-      ? `资源链接 (${source.pcloudCode.slice(0, 6)}...)` 
-      : '未命名资源';
-    link.textContent = name;
-    
-    li.appendChild(icon);
-    li.appendChild(link);
-    list.appendChild(li);
+    li.appendChild(a);
+    ul.appendChild(li);
   });
-
-  if (list.children.length === 0) {
-    container.innerHTML = '<p class="empty">该分类下没有可用资源</p>';
-  } else {
-    container.appendChild(list);
-  }
+  
+  container.innerHTML = '';
+  container.appendChild(ul);
 }
