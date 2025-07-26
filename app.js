@@ -5,6 +5,11 @@ fetch('final_config.json')
   .then(config => {
     configData = config;
     renderFromHash();
+  })
+  .catch(error => {
+    console.error('加载配置失败:', error);
+    document.getElementById('content').innerHTML = 
+      '<p class="error">加载配置失败，请刷新页面</p>';
   });
 
 window.addEventListener('hashchange', renderFromHash);
@@ -19,61 +24,101 @@ function renderFromHash() {
   const path = hash ? hash.split('/') : [];
 
   let current = { subcategories: configData.categories };
-  let parentPath = [];
+  let fullPath = [];
 
+  // 导航到当前分类
   for (let p of path) {
-    const next = (current.subcategories || []).find(item => item.subtype === p || item.type === p);
+    const next = (current.subcategories || []).find(item => 
+      item.subtype === p || item.type === p
+    );
     if (next) {
-      parentPath.push(current);
+      fullPath.push(next.subtype || next.type);
       current = next;
-    } else {
-      break;
     }
   }
 
-  title.textContent = path[path.length - 1] || '资源分类';
+  title.textContent = fullPath[fullPath.length - 1] || '资源分类';
 
-  if (path.length > 0) {
+  // 返回链接处理
+  if (fullPath.length > 0) {
     backLink.style.display = 'inline';
-    backLink.href = '#' + path.slice(0, -1).join('/');
+    backLink.href = '#' + fullPath.slice(0, -1).join('/');
   } else {
     backLink.style.display = 'none';
   }
 
-  const list = document.createElement('ul');
-
+  // 渲染内容
   if (current.subcategories) {
-    current.subcategories.forEach(sub => {
-      const li = document.createElement('li');
-      const a = document.createElement('a');
-      a.textContent = sub.subtype || sub.type;
-      
-      // 如果是叶子节点且有源文件，直接生成共享链接
-      if (!sub.subcategories && sub.sources && sub.sources.length > 0) {
-        a.href = 'https://e.pcloud.link/publink/show?code=' + sub.sources[0].pcloudCode;
-        a.target = '_blank';
-      } else {
-        a.href = '#' + [...path, sub.subtype || sub.type].join('/');
-      }
-      
-      li.appendChild(a);
-      list.appendChild(li);
-    });
-  } else if (current.sources) {
-    current.sources.forEach(source => {
-      const li = document.createElement('li');
-      const a = document.createElement('a');
-      a.textContent = source.pcloudCode || '文件链接';
-      a.href = 'https://e.pcloud.link/publink/show?code=' + source.pcloudCode;
-      a.target = '_blank';
-      li.appendChild(a);
-      list.appendChild(li);
-    });
-  } else {
-    const msg = document.createElement('p');
-    msg.textContent = '此分类暂无内容。';
-    content.appendChild(msg);
+    renderCategories(current.subcategories, fullPath, content);
+  } 
+  else if (current.sources && current.sources.length > 0) {
+    renderFiles(current.sources, content);
   }
+  else {
+    content.innerHTML = '<p class="empty">此分类暂无内容</p>';
+  }
+}
 
-  content.appendChild(list);
+function renderCategories(subcategories, currentPath, container) {
+  const list = document.createElement('ul');
+  list.className = 'category-list';
+
+  subcategories.forEach(item => {
+    const li = document.createElement('li');
+    const a = document.createElement('a');
+    
+    a.textContent = item.subtype || item.type;
+    a.href = '#' + [...currentPath, item.subtype || item.type].join('/');
+    
+    // 如果是叶子节点且有资源，添加文件数量提示
+    if (!item.subcategories && item.sources?.length > 0) {
+      const count = document.createElement('span');
+      count.className = 'file-count';
+      count.textContent = ` (${item.sources.length}个文件)`;
+      a.appendChild(count);
+    }
+    
+    li.appendChild(a);
+    list.appendChild(li);
+  });
+
+  container.appendChild(list);
+}
+
+function renderFiles(sources, container) {
+  container.innerHTML = '<h3>文件列表</h3>';
+  
+  const list = document.createElement('ul');
+  list.className = 'file-list';
+
+  sources.forEach(source => {
+    if (!source.pcloudCode) return;
+    
+    const li = document.createElement('li');
+    li.className = 'file-item';
+    
+    const icon = document.createElement('span');
+    icon.className = 'file-icon';
+    icon.textContent = '📁'; // 默认文件夹图标
+    
+    const link = document.createElement('a');
+    link.href = `https://e.pcloud.link/publink/show?code=${source.pcloudCode}`;
+    link.target = '_blank';
+    
+    // 从链接中提取有意义的名称
+    const name = source.pcloudCode 
+      ? `资源链接 (${source.pcloudCode.slice(0, 6)}...)` 
+      : '未命名资源';
+    link.textContent = name;
+    
+    li.appendChild(icon);
+    li.appendChild(link);
+    list.appendChild(li);
+  });
+
+  if (list.children.length === 0) {
+    container.innerHTML = '<p class="empty">该分类下没有可用资源</p>';
+  } else {
+    container.appendChild(list);
+  }
 }
