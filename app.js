@@ -1,7 +1,7 @@
 // 全局状态
 let configData = null;
 let currentPath = [];
-const fileCache = {};
+let activeIframeUrl = null;
 
 // 主入口
 document.addEventListener('DOMContentLoaded', () => {
@@ -11,31 +11,16 @@ document.addEventListener('DOMContentLoaded', () => {
       configData = config;
       initNavigation();
       initSearch();
-    })
-    .catch(error => {
-      console.error('加载配置失败:', error);
-      document.getElementById('content').innerHTML = 
-        '<p class="error">加载配置失败，请刷新页面</p>';
     });
 });
 
-// 初始化导航系统
+// 初始化导航
 function initNavigation() {
-  window.addEventListener('hashchange', () => {
-    currentPath = decodeURIComponent(window.location.hash.slice(1))
-      .split('/')
-      .filter(Boolean);
-    renderView();
-  });
-  
-  // 初始加载
-  currentPath = decodeURIComponent(window.location.hash.slice(1))
-    .split('/')
-    .filter(Boolean);
-  renderView();
+  window.addEventListener('hashchange', updateView);
+  updateView();
 }
 
-// 初始化搜索系统
+// 初始化搜索
 function initSearch() {
   const searchBox = document.getElementById('searchBox');
   let searchTimer = null;
@@ -44,15 +29,48 @@ function initSearch() {
     clearTimeout(searchTimer);
     const keyword = searchBox.value.trim();
     
-    if (keyword.length === 0) {
-      renderView();
+    if (keyword === '') {
+      document.getElementById('searchResults').style.display = 'none';
+      document.getElementById('content').style.display = 'block';
       return;
     }
 
     searchTimer = setTimeout(() => {
-      performSearch(keyword.toLowerCase());
+      searchFiles(keyword);
     }, 300);
   });
+}
+
+// 更新视图
+function updateView() {
+  currentPath = decodeURIComponent(window.location.hash.slice(1))
+    .split('/')
+    .filter(Boolean);
+
+  const content = document.getElementById('content');
+  const title = document.getElementById('title');
+  const backLink = document.getElementById('backLink');
+
+  // 更新标题和返回链接
+  title.textContent = currentPath[currentPath.length - 1] || '资源分类';
+  backLink.style.display = currentPath.length ? 'inline' : 'none';
+  backLink.href = currentPath.length > 1 ? 
+    '#' + currentPath.slice(0, -1).join('/') : '#';
+
+  // 显示加载状态
+  content.innerHTML = '<p class="loading">加载中...</p>';
+
+  // 获取当前节点
+  const currentNode = getCurrentNode();
+  
+  if (currentNode.sources?.[0]?.pcloudCode) {
+    activeIframeUrl = `https://e.pcloud.link/publink/show?code=${currentNode.sources[0].pcloudCode}`;
+    renderPCloudIframe(activeIframeUrl, content);
+  } else if (currentNode.subcategories?.length > 0) {
+    renderCategoryList(currentNode.subcategories, content);
+  } else {
+    content.innerHTML = '<p class="empty">此分类暂无内容</p>';
+  }
 }
 
 // 获取当前节点
@@ -68,43 +86,13 @@ function getCurrentNode() {
   return current;
 }
 
-// 主渲染函数
-function renderView() {
-  const content = document.getElementById('content');
-  const title = document.getElementById('title');
-  const backLink = document.getElementById('backLink');
-  const searchBox = document.getElementById('searchBox');
-
-  // 重置搜索框
-  searchBox.value = '';
-  
-  const current = getCurrentNode();
-  title.textContent = currentPath[currentPath.length - 1] || '资源分类';
-  
-  // 更新返回链接
-  backLink.style.display = currentPath.length ? 'inline' : 'none';
-  backLink.href = currentPath.length > 1 ? 
-    '#' + currentPath.slice(0, -1).join('/') : '#';
-
-  // 渲染内容
-  content.innerHTML = '<p class="loading">加载中...</p>';
-
-  if (current.sources?.[0]?.pcloudCode) {
-    renderPCloudFolder(current.sources[0].pcloudCode, content);
-  } else if (current.subcategories?.length > 0) {
-    renderCategoryList(current.subcategories, content);
-  } else {
-    content.innerHTML = '<p class="empty">此分类暂无内容</p>';
-  }
-}
-
 // 渲染分类列表
 function renderCategoryList(subcategories, container) {
   const ul = document.createElement('ul');
   
   subcategories.forEach(item => {
     const li = document.createElement('li');
-    li.className = 'category-item';
+    li.className = 'file-item';
     
     const a = document.createElement('a');
     a.textContent = item.subtype || item.type;
@@ -118,137 +106,64 @@ function renderCategoryList(subcategories, container) {
   container.appendChild(ul);
 }
 
-// 渲染pCloud文件夹内容
-function renderPCloudFolder(pcloudCode, container) {
-  if (fileCache[pcloudCode]) {
-    renderFileList(fileCache[pcloudCode], container);
-    return;
-  }
-
-  container.innerHTML = '<p class="loading">加载文件列表...</p>';
-  
-  // 使用iframe方案（兼容性最好）
+// 渲染pCloud iframe
+function renderPCloudIframe(url, container) {
   container.innerHTML = `
-    <iframe 
-      src="https://e.pcloud.link/publink/show?code=${pcloudCode}"
-      style="width:100%; height:70vh; border:none;"
-    ></iframe>
+    <iframe src="${url}" id="pcloudFrame"></iframe>
   `;
-
-  // 可选：如果你想用API获取文件列表（需处理跨域）
-  // fetchPCloudFiles(pcloudCode).then(files => {
-  //   fileCache[pcloudCode] = files;
-  //   renderFileList(files, container);
-  // });
 }
 
-// 执行搜索
-async function performSearch(keyword) {
-  const content = document.getElementById('content');
-  content.innerHTML = '<p class="loading">搜索中...</p>';
+// 搜索文件
+async function searchFiles(keyword) {
+  if (!activeIframeUrl) return;
 
-  const currentNode = getCurrentNode();
-  const pcloudCodes = collectPCloudCodes(currentNode);
-  
-  const allFiles = [];
-  for (const code of pcloudCodes) {
-    const files = await fetchPCloudFiles(code);
-    allFiles.push(...files);
-  }
+  const searchResults = document.getElementById('searchResults');
+  searchResults.innerHTML = '<p class="loading">搜索中...</p>';
+  searchResults.style.display = 'block';
+  document.getElementById('content').style.display = 'none';
 
-  const results = allFiles.filter(file => 
-    file.name.toLowerCase().includes(keyword)
-  );
-
-  renderSearchResults(results, content);
-}
-
-// 收集所有pCloud codes（递归子分类）
-function collectPCloudCodes(node) {
-  let codes = [];
-  
-  if (node.sources?.[0]?.pcloudCode) {
-    codes.push(node.sources[0].pcloudCode);
-  }
-  
-  if (node.subcategories) {
-    node.subcategories.forEach(sub => {
-      codes.push(...collectPCloudCodes(sub));
-    });
-  }
-  
-  return [...new Set(codes)]; // 去重
-}
-
-// 获取pCloud文件列表（需处理跨域问题）
-async function fetchPCloudFiles(pcloudCode) {
-  if (fileCache[pcloudCode]) return fileCache[pcloudCode];
-  
   try {
-    // 注意：实际使用时需要代理或处理跨域
-    const response = await fetch(
-      `https://api.pcloud.com/listfolder?code=${pcloudCode}&showdeleted=0&nofiles=0`
-    );
-    const data = await response.json();
+    // 获取pCloud页面内容
+    const html = await fetch(activeIframeUrl).then(res => res.text());
     
-    const files = data.metadata?.contents
-      ?.filter(item => !item.isfolder)
-      ?.map(file => ({
-        name: file.name,
-        url: `https://e.pcloud.link/publink/show?code=${pcloudCode}&fileid=${file.fileid}`
-      })) || [];
+    // 解析HTML获取文件列表
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    const fileLinks = Array.from(doc.querySelectorAll('a[href*="/file/"]'));
     
-    fileCache[pcloudCode] = files;
-    return files;
+    // 过滤和匹配结果
+    const results = fileLinks
+      .map(link => ({
+        name: link.textContent.trim(),
+        url: link.href
+      }))
+      .filter(file => 
+        file.name.toLowerCase().includes(keyword.toLowerCase())
+      );
+
+    // 渲染结果
+    if (results.length > 0) {
+      const ul = document.createElement('ul');
+      results.forEach(file => {
+        const li = document.createElement('li');
+        li.className = 'file-item';
+        li.innerHTML = `<a href="${file.url}" target="_blank">${file.name}</a>`;
+        ul.appendChild(li);
+      });
+      searchResults.innerHTML = '';
+      searchResults.appendChild(ul);
+    } else {
+      searchResults.innerHTML = `
+        <p class="empty">没有找到匹配的文件</p>
+        <p>建议尝试：</p>
+        <ul>
+          <li>缩短关键词（如"徐立"）</li>
+          <li>检查特殊字符或空格</li>
+        </ul>
+      `;
+    }
   } catch (error) {
-    console.error('获取文件列表失败:', error);
-    return [];
+    console.error('搜索失败:', error);
+    searchResults.innerHTML = '<p class="empty">搜索过程中出错，请刷新页面重试</p>';
   }
-}
-
-// 渲染文件列表
-function renderFileList(files, container) {
-  const ul = document.createElement('ul');
-  
-  files.forEach(file => {
-    const li = document.createElement('li');
-    li.className = 'file-item';
-    
-    const a = document.createElement('a');
-    a.textContent = file.name;
-    a.href = file.url;
-    a.target = '_blank';
-    
-    li.appendChild(a);
-    ul.appendChild(li);
-  });
-
-  container.innerHTML = '';
-  container.appendChild(ul);
-}
-
-// 渲染搜索结果
-function renderSearchResults(results, container) {
-  if (results.length === 0) {
-    container.innerHTML = '<p class="empty">没有找到匹配的文件</p>';
-    return;
-  }
-
-  const ul = document.createElement('ul');
-  
-  results.forEach(file => {
-    const li = document.createElement('li');
-    li.className = 'file-item search-result';
-    
-    const a = document.createElement('a');
-    a.textContent = file.name;
-    a.href = file.url;
-    a.target = '_blank';
-    
-    li.appendChild(a);
-    ul.appendChild(li);
-  });
-
-  container.innerHTML = '<h3>搜索结果</h3>';
-  container.appendChild(ul);
 }
