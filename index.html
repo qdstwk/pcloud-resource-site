@@ -9,39 +9,68 @@
       max-width: 900px;
       margin: 0 auto;
       padding: 20px;
+      line-height: 1.6;
     }
     h1 {
       color: #2c3e50;
       border-bottom: 1px solid #eee;
       padding-bottom: 10px;
     }
+    .controls {
+      display: flex;
+      align-items: center;
+      margin: 15px 0;
+    }
     #backLink {
-      display: inline-block;
-      margin: 10px 0;
       color: #3498db;
       text-decoration: none;
+      margin-right: 20px;
+    }
+    #searchBox {
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      flex-grow: 1;
+      max-width: 400px;
     }
     ul {
       list-style: none;
-      padding-left: 0;
+      padding: 0;
     }
-    li {
-      padding: 8px 0;
+    .category-item, .file-item {
+      padding: 10px;
       border-bottom: 1px solid #f0f0f0;
+    }
+    .category-item::before {
+      content: "📁 ";
+    }
+    .file-item::before {
+      content: "📄 ";
     }
     a {
       color: #2980b9;
       text-decoration: none;
     }
+    .search-result {
+      background-color: #f8f9fa;
+      border-left: 3px solid #3498db;
+    }
+    .loading {
+      color: #6c757d;
+      font-style: italic;
+    }
     .empty {
-      color: #95a5a6;
+      color: #6c757d;
       font-style: italic;
     }
   </style>
 </head>
 <body>
   <h1 id="title">资源分类</h1>
-  <a href="#" id="backLink" style="display:none">← 返回上一级</a>
+  <div class="controls">
+    <a href="#" id="backLink" style="display:none">← 返回上一级</a>
+    <input type="text" id="searchBox" placeholder="搜索当前分类下的文件...">
+  </div>
   <div id="content">正在加载...</div>
   <script src="app.js"></script>
 </body>
