@@ -2,71 +2,58 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8">
-  <title>资源分类</title>
+  <title>教会资源库</title>
   <style>
     body {
-      font-family: 'Helvetica Neue', Arial, sans-serif;
-      line-height: 1.6;
-      padding: 20px;
+      font-family: 'Microsoft YaHei', sans-serif;
       max-width: 800px;
       margin: 0 auto;
-      color: #333;
+      padding: 20px;
+      line-height: 1.6;
     }
     h1 {
       color: #2c3e50;
       border-bottom: 1px solid #eee;
       padding-bottom: 10px;
     }
-    .back {
-      margin: 15px 0;
-    }
-    .category-list, .file-list {
-      list-style: none;
-      padding: 0;
-    }
-    .category-list li {
-      padding: 8px 0;
-      border-bottom: 1px solid #f0f0f0;
-    }
-    .file-item {
-      display: flex;
-      align-items: center;
-      padding: 10px;
-      border-radius: 4px;
-    }
-    .file-item:hover {
-      background-color: #f9f9f9;
-    }
-    .file-icon {
-      margin-right: 10px;
-      font-size: 1.2em;
-    }
-    a {
+    #backLink {
+      display: inline-block;
+      margin-bottom: 20px;
       color: #3498db;
       text-decoration: none;
     }
-    a:hover {
-      text-decoration: underline;
+    ul {
+      list-style: none;
+      padding: 0;
     }
-    .file-count {
-      color: #7f8c8d;
-      font-size: 0.9em;
+    li {
+      padding: 10px 15px;
+      border-bottom: 1px solid #f0f0f0;
     }
-    .empty, .error {
+    li:hover {
+      background-color: #f9f9f9;
+    }
+    a {
+      color: #2980b9;
+      text-decoration: none;
+      display: block;
+    }
+    .file-item::before {
+      content: "📄 ";
+    }
+    .category-item::before {
+      content: "📁 ";
+    }
+    .empty-msg {
       color: #95a5a6;
       font-style: italic;
-    }
-    .error {
-      color: #e74c3c;
     }
   </style>
 </head>
 <body>
   <h1 id="title">资源分类</h1>
-  <div class="back">
-    <a href="#" id="backLink" style="display:none">← 返回上一级</a>
-  </div>
-  <div id="content">正在加载资源分类...</div>
+  <a href="#" id="backLink" style="display:none">← 返回上一级</a>
+  <div id="content">正在加载...</div>
   <script src="app.js"></script>
 </body>
 </html>
