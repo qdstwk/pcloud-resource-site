@@ -1,29 +1,72 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="zh">
 <head>
   <meta charset="UTF-8">
   <title>资源分类</title>
   <style>
-    body { font-family: sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
-    .back { margin-bottom: 20px; }
-    h1 { font-size: 24px; color: #333; }
-    ul { list-style: none; padding-left: 0; }
-    li { margin: 8px 0; padding: 8px; border-radius: 4px; }
-    li:hover { background-color: #f5f5f5; }
-    a { text-decoration: none; color: #0066cc; }
-    a:hover { text-decoration: underline; }
-    .file-list { margin-top: 20px; }
-    .file-item { display: flex; align-items: center; padding: 8px 0; }
-    .file-icon { margin-right: 8px; color: #666; }
-    .loading { color: #666; font-style: italic; }
-    .empty-message { color: #666; }
+    body {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.6;
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+      color: #333;
+    }
+    h1 {
+      color: #2c3e50;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+    }
+    .back {
+      margin: 15px 0;
+    }
+    .category-list, .file-list {
+      list-style: none;
+      padding: 0;
+    }
+    .category-list li {
+      padding: 8px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .file-item {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      border-radius: 4px;
+    }
+    .file-item:hover {
+      background-color: #f9f9f9;
+    }
+    .file-icon {
+      margin-right: 10px;
+      font-size: 1.2em;
+    }
+    a {
+      color: #3498db;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .file-count {
+      color: #7f8c8d;
+      font-size: 0.9em;
+    }
+    .empty, .error {
+      color: #95a5a6;
+      font-style: italic;
+    }
+    .error {
+      color: #e74c3c;
+    }
   </style>
 </head>
 <body>
   <h1 id="title">资源分类</h1>
-  <div class="back"><a href="#" id="backLink" style="display:none">← 返回上一级</a></div>
-  <div id="content">正在加载分类...</div>
+  <div class="back">
+    <a href="#" id="backLink" style="display:none">← 返回上一级</a>
+  </div>
+  <div id="content">正在加载资源分类...</div>
   <script src="app.js"></script>
 </body>
 </html>
