@@ -1482,7 +1482,11 @@
           "subcategories": [
             {
               "subtype": "全文",
-              "sources": []
+              "sources": [
+                {
+              "pcloudCode": "kZuqFEZkWN05KTDOE8ICX3UCHKtvkV91Qik"
+            }
+              ]
             },
             {
               "subtype": "旧约",
@@ -1762,7 +1766,11 @@
         },
         {
           "subtype": "诗歌音频",
-          "sources": []
+          "sources": [
+            {
+              "pcloudCode": "kZbg8EZCmgbGAXhkK7tV6QbCSAGg7zBmUxy"
+            }
+          ]
         }
       ]
     }
